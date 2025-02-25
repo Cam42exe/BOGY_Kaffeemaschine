@@ -27,6 +27,7 @@ const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
 bool cancelrequest = false;
+bool authorised = false;
 int coffeenumber = 0;   //Welcher Kaffee gemacht werden soll. 1 = Einfach Kaffee; 2 = Doppelter Kaffee;
 int requestcoffee = 0;  //Um Mehrfacheingaben zu verhindern. 3 = Einfacher Espresso; 4 = Doppelter Espresso
 
@@ -53,17 +54,23 @@ void setup() {
 }
 
 void loop() {
-  getUID();
+/*  getUID();                       //Auskommentieren für Debug von Knöpfen
   if (requestcoffee > 0) {
     Serial.print("Kaffeenummer: ");
     Serial.println(requestcoffee);
     requestcoffee = 0;
-  }
-  if (UID.length() > 0) {
-  Serial.print("KartenID: ");
+  }*/
+/*if (UID.length() > 0) {
+  Serial.print("KartenID: ");     //Auskommentieren für Debug von Karten
   Serial.println(UID);
-  UID.clear();
+  }*/
+  if (authorised) {
+
   }
+}
+
+void () {
+
 }
 
 void getUID() {
@@ -74,7 +81,8 @@ void getUID() {
     UID += String(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
     UID += String(rfid.uid.uidByte[i], HEX);
   }
-  UID.trim();  // Trim leading/trailing whitespaces
+  UID.trim();  //UID auf nur "Relevantes" kürzen
+  authorised = true;
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
 }
