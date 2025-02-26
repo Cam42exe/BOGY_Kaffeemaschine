@@ -11,6 +11,8 @@ brewing -> waiting [color = "red" fontcolor = "red" label = "cancel"]
 }
 */
 
+#include<Preferences.h> //Noch nicht implementiert!!
+
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
 #include <MFRC522.h>
 #define SS_PIN 5    // ESP32 pin GPIO5
@@ -88,11 +90,21 @@ void pressCoffee() {  //Name ist ein Insider-Joke, mir ist kein besserer Name f�
     wait_till_timeout++;
     delay(1);
   }
-  
+  coffeenumber = requestcoffee;
+  makeCoffee();
 }
 
 void makeCoffee() {   //Um den Insider Joke fortzusetzen, ein einigermaßen sinnvoller Name um der Maschine zu sagen, mach mal! Ähh Bitte. SOFORT!
-
+  if(coffeenumber == 1) { //Über den Levelshifter namens Arduino Uno als Umweg den richtigen Befehl an die Maschine senden.
+    Serial.println(); //BITTE KORREKTE BEFEHLE HERRAUSFINDEN UND HIER EINTRAGEN!!!
+  } else if(coffeenumber == 2) {
+    Serial.println();
+  } else if (coffeenumber == 3) {
+    Serial.println();
+  } else if (coffeenumber == 4) {
+    Serial.println();
+  }
+  //Hier kommt die Abrechnung hin
 }
 
 void reset() {
@@ -107,12 +119,11 @@ void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     return;
   }  // UID in einer Variablen speichern
-  for (int i = 0; i < rfid.uid.size; i++) {
-    UID += String(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
+for (int i = 0; i < rfid.uid.size; i++) {
+    if (rfid.uid.uidByte[i] < 0x10) UID += "0";
     UID += String(rfid.uid.uidByte[i], HEX);
-  }
-  UID.trim();  //UID auf nur "Relevantes" kürzen
-  authorised = true;
+}
+  UID.trim();  //String verkürzen
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
 }

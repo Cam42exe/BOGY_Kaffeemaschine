@@ -1,24 +1,9 @@
-/* Credits: Simon // Cam42exe
-Graphviz visualization of Finite State Machine. Following Code will represent my own implementation
-digraph G {
-waiting -> authorised [color = "blue" fontcolor = "blue" label = "show token"]
-authorised -> brewing [color = "blue" fontcolor = "blue" label = "press button\n for coffee"]
-brewing -> waiting [color = "blue" fontcolor = "blue" label = "waiting 30sec,\n then pay"]
-start -> waiting [color = "green" fontcolor = "green" label = "machine on?"]
-authorised -> waiting [color = "orange" fontcolor = "orange" label = "timeout \n10sec"]
-authorised -> waiting [color = "red" fontcolor = "red" label = "cancel"]
-brewing -> waiting [color = "red" fontcolor = "red" label = "cancel"]
-}
-*/
-
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
 #include <MFRC522.h>
 #define SS_PIN 5    // ESP32 pin GPIO5
 #define RST_PIN 27  // ESP32 pin GPIO27
 MFRC522 rfid(SS_PIN, RST_PIN);
 
-
-bool doublecoff = false;   //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
 String UID = "";
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
@@ -26,7 +11,6 @@ const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
-bool cancelrequest = false;
 int coffeenumber = 0;   //Welcher Kaffee gemacht werden soll. 1 = Einfach Kaffee; 2 = Doppelter Kaffee;
 int requestcoffee = 0;  //Um Mehrfacheingaben zu verhindern. 3 = Einfacher Espresso; 4 = Doppelter Espresso
 
@@ -60,9 +44,9 @@ void loop() {
     requestcoffee = 0;
   }
   if (UID.length() > 0) {
-  Serial.print("KartenID: ");
-  Serial.println(UID);
-  UID.clear();
+    Serial.print("KartenID: ");
+    Serial.println(UID);
+    UID.clear();
   }
 }
 
@@ -70,10 +54,10 @@ void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     return;
   }  // UID in einer Variablen speichern
-  for (int i = 0; i < rfid.uid.size; i++) {
-    UID += String(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
+for (int i = 0; i < rfid.uid.size; i++) {
+    if (rfid.uid.uidByte[i] < 0x10) UID += "0";
     UID += String(rfid.uid.uidByte[i], HEX);
-  }
+}
   UID.trim();  // Trim leading/trailing whitespaces
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
