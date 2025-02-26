@@ -1,5 +1,4 @@
 # Kaffeemaschinensteuerung & Abrechnung
-**[GitHub](https://github.com/Cam42exe/BOGY_Kaffeemaschine)**
 
 Ein kleines ESP32 Skript, um eine jura Impressa S7 zu steuern.
 
