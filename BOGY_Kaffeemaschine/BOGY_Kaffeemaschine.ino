@@ -26,6 +26,9 @@ const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
+const int authorised_timeout = 10000; //Zeit in ms bis man nicht mehr Autorisiert ist.
+const int finish_transaction = 30000; //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
+
 bool cancelrequest = false;
 bool authorised = false;
 int coffeenumber = 0;   //Welcher Kaffee gemacht werden soll. 1 = Einfach Kaffee; 2 = Doppelter Kaffee;
@@ -33,6 +36,7 @@ int requestcoffee = 0;  //Um Mehrfacheingaben zu verhindern. 3 = Einfacher Espre
 
 void setup() {
   Serial.begin(115200);
+  while(!Serial);
 
   Serial.print("Initialisiere RFID Reader");
   SPI.begin();      // init SPI bus
@@ -65,12 +69,38 @@ void loop() {
   Serial.println(UID);
   }*/
   if (authorised) {
-
+    requestcoffee = 0; //Auskommentieren, wenn keine Explizierte Reihenfolge gefragt ist.
+    pressCoffee();
   }
 }
 
-void () {
+void pressCoffee() {  //Name ist ein Insider-Joke, mir ist kein besserer Name für die Funktion eingefallen.
+  int wait_till_timeout = 0;
+  while(requestcoffee < 1) {
+    if(wait_till_timeout > authorised_timeout) {
+      reset();
+      return;
+    }
+    if(cancelrequest) {
+      reset();
+      return;
+    }
+    wait_till_timeout++;
+    delay(1);
+  }
+  
+}
 
+void makeCoffee() {   //Um den Insider Joke fortzusetzen, ein einigermaßen sinnvoller Name um der Maschine zu sagen, mach mal! Ähh Bitte. SOFORT!
+
+}
+
+void reset() {
+  UID.clear(); //Um falsche Abrechnungen zu vermeiden einfach einmal den String leeren.
+  authorised = false; //Und einmal noch den Zustand zurücksetzen.
+  requestcoffee = 0;
+  coffeenumber = 0;
+  cancelrequest = false;
 }
 
 void getUID() {
