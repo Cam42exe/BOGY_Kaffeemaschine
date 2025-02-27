@@ -5,7 +5,7 @@
 MFRC522 rfid(SS_PIN, RST_PIN);
 
 
-bool doublecoff = false;   //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
+bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
 String UID;
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
@@ -13,8 +13,8 @@ const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
-const int authorised_timeout = 10000; //Zeit in ms bis man nicht mehr Autorisiert ist.
-const int finish_transaction = 30000; //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
+const int authorised_timeout = 10000;  //Zeit in ms bis man nicht mehr Autorisiert ist.
+const int finish_transaction = 30000;  //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
 
 bool cancelrequest = false;
 bool authorised = false;
@@ -69,11 +69,11 @@ void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     return;
   }  // UID in einer Variablen speichern
-for (int i = 0; i < rfid.uid.size; i++) {
+  for (int i = 0; i < rfid.uid.size; i++) {
     if (rfid.uid.uidByte[i] < 0x10) UID += "0";
     UID += String(rfid.uid.uidByte[i], HEX);
-}
-  UID.trim();  // Trim leading/trailing whitespaces
+  }
+  UID.trim();  //Leerzeichen am Anfang und am Ende entfernen.
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
 }
