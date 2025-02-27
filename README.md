@@ -21,5 +21,5 @@ Jegliche Verarbeitung wird Anonym und Lokal durchgeführt. Für die Abrechnung w
 ### Credits 🪪🔙
 Vielen Dank an [psct](https://github.com/psct) für das [sharespresso](https://github.com/psct/sharespresso) Projekt. Desweiteren ein großes Dankeschön an [vshymanskyy](https://github.com/vshymanskyy/) für die Bibliothek [Preferences](https://github.com/vshymanskyy/Preferences), ohne die das Speichermanagement sehr aufwändig geworden wäre. Desweiteren vielen Dank an [miguelbalboa](https://github.com/miguelbalboa/) für die Bibliothek [MFRC522](https://github.com/miguelbalboa/rfid/).
 
-**Wenn du dir weitere Funktionen wünscht oder einen Fehler findest, öffne einfach ein Issue in diesem [GitHub Repository](https://github.com/Cam42_exe/BOGY_Kaffeemaschine/issues).**
+**Wenn du dir weitere Funktionen wünscht oder einen Fehler findest, öffne einfach ein Issue hier im [GitHub Repository](https://github.com/Cam42_exe/BOGY_Kaffeemaschine/issues).**
 
