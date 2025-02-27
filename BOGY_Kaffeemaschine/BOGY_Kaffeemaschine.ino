@@ -150,13 +150,16 @@ void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     return;
   }  // UID in einer Variablen speichern
+  UID.clear();
   for (int i = 0; i < rfid.uid.size; i++) {
     if (rfid.uid.uidByte[i] < 0x10) UID += "0";
     UID += String(rfid.uid.uidByte[i], HEX);
   }
   UID.trim();  //String verkürzen
+  authorised = true;
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
+  Serial.println(UID);
 }
 
 //ISRs für Userinputs
