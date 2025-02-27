@@ -16,18 +16,18 @@ Preferences prefs;
 
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
 #include <MFRC522.h>
-const int ss_pin 5;    // ESP32 pin GPIO5
-const int rst_pin 27;  // ESP32 pin GPIO27
+const int ss_pin = 5;    // ESP32 pin GPIO5
+const int rst_pin = 27;  // ESP32 pin GPIO27
 MFRC522 rfid(ss_pin, rst_pin);
 
 
 bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
-String UID;
+String UID = "";
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
 const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
-const int but_despr = 14;  //Knopf für einen doppelten Espresso
+const int      but_despr = 14;  //Knopf für einen doppelten Espresso
 
 const int authorised_timeout = 10000;  //Zeit in ms bis man nicht mehr Autorisiert ist.
 const int finish_transaction = 30000;  //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
