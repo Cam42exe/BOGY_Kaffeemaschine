@@ -70,6 +70,7 @@ void setup() {
 }
 
 void loop() {
+  getUID();
   /*  getUID();                       //Auskommentieren für Debug von Knöpfen
   if (requestcoffee > 0) {
     Serial.print("Kaffeenummer: ");
