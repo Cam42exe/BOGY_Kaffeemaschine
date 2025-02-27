@@ -1,5 +1,5 @@
 /* Credits: Simon // Cam42exe
-Graphviz visualization of Finite State Machine. Following Code will represent my own implementation
+Graphviz veranschaulichung des Codes als Finite State Machine. Der folgende Code zeigt meine eigene Implementation.
 digraph G {
 waiting -> authorised [color = "blue" fontcolor = "blue" label = "show token"]
 authorised -> brewing [color = "blue" fontcolor = "blue" label = "press button\n for coffee"]
@@ -11,7 +11,8 @@ brewing -> waiting [color = "red" fontcolor = "red" label = "cancel"]
 }
 */
 
-#include<Preferences.h> //Noch nicht implementiert!!
+#include<Preferences.h> //Bibliothek zum finalen Abspeichern
+Preferences prefs;
 
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
 #include <MFRC522.h>
@@ -21,7 +22,7 @@ MFRC522 rfid(SS_PIN, RST_PIN);
 
 
 bool doublecoff = false;   //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
-String UID = "";
+String UID;
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
 const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
@@ -35,6 +36,14 @@ bool cancelrequest = false;
 bool authorised = false;
 int coffeenumber = 0;   //Welcher Kaffee gemacht werden soll. 1 = Einfach Kaffee; 2 = Doppelter Kaffee;
 int requestcoffee = 0;  //Um Mehrfacheingaben zu verhindern. 3 = Einfacher Espresso; 4 = Doppelter Espresso
+/*
+AN:01 Anschalten
+AN:02 Ausschalten
+FA:04 1Kaffee
+FA:05 2Kaffee
+FA:06 1Espresso
+FA:07 2Espresso
+*/
 
 void setup() {
   Serial.begin(115200);
@@ -96,7 +105,7 @@ void pressCoffee() {  //Name ist ein Insider-Joke, mir ist kein besserer Name f�
 
 void makeCoffee() {   //Um den Insider Joke fortzusetzen, ein einigermaßen sinnvoller Name um der Maschine zu sagen, mach mal! Ähh Bitte. SOFORT!
   if(coffeenumber == 1) { //Über den Levelshifter namens Arduino Uno als Umweg den richtigen Befehl an die Maschine senden.
-    Serial.println(); //BITTE KORREKTE BEFEHLE HERRAUSFINDEN UND HIER EINTRAGEN!!!
+    Serial.println();
   } else if(coffeenumber == 2) {
     Serial.println();
   } else if (coffeenumber == 3) {
@@ -104,7 +113,27 @@ void makeCoffee() {   //Um den Insider Joke fortzusetzen, ein einigermaßen sinn
   } else if (coffeenumber == 4) {
     Serial.println();
   }
-  //Hier kommt die Abrechnung hin
+  checkout();
+}
+
+void checkout() {
+  int pay_up_wait = 0;
+  while(finish_transaction > pay_up_wait) {//30Sek. warten bis Kaufvertrag schließen.
+    if (cancelrequest){
+      reset();
+      return;
+    }
+    delay(1);
+    pay_up_wait++;
+  }
+  prefs.begin("Strichliste", false); //Nicht schreibgeschützten Namensraum öffnen
+  int count = prefs.getInt(UID, 0);
+  count ++;//Abrechnen
+  if(double){//Sonderfall doppelter Kaffee/Espresso abarbeiten.
+    count++;
+  }
+  prefs.putInt(UID, count); //Wert schreiben
+  prefs.end(); //Und finales Abspeichern, um eine korrekte Zählung zu ermöglichen.
 }
 
 void reset() {

@@ -5,10 +5,10 @@ Here are some commands (valid for Jura Impressa S90/95 only! Use at your own ris
 
 AN:01 switches coffeemaker on
 AN:02 switches coffeemaker off
-FA:04 defineatly not a Espresso: small cup 
-FA:05 two small cups
-FA:06 large cup
-FA:07 two large cups
+FA:04 coffe
+FA:05 2coffee
+FA:06 espresso
+FA:07 2espresso
 FA:08 steam
 FA:09 steam
 FA:0C XXL cup 
