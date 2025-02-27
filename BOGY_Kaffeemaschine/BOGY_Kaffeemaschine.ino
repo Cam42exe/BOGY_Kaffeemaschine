@@ -16,9 +16,9 @@ Preferences prefs;
 
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
 #include <MFRC522.h>
-#define SS_PIN 5    // ESP32 pin GPIO5
-#define RST_PIN 27  // ESP32 pin GPIO27
-MFRC522 rfid(SS_PIN, RST_PIN);
+const int ss_pin 5;    // ESP32 pin GPIO5
+const int rst_pin 27;  // ESP32 pin GPIO27
+MFRC522 rfid(ss_pin, rst_pin);
 
 
 bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
