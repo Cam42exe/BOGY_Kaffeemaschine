@@ -11,7 +11,7 @@ brewing -> waiting [color = "red" fontcolor = "red" label = "cancel"]
 }
 */
 
-#include<Preferences.h> //Bibliothek zum finalen Abspeichern
+#include <Preferences.h>  //Bibliothek zum finalen Abspeichern
 Preferences prefs;
 
 #include <SPI.h>  //Config für RFID Reader vom Typ RC522
@@ -21,7 +21,7 @@ Preferences prefs;
 MFRC522 rfid(SS_PIN, RST_PIN);
 
 
-bool doublecoff = false;   //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
+bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
 String UID;
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
@@ -29,8 +29,8 @@ const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
-const int authorised_timeout = 10000; //Zeit in ms bis man nicht mehr Autorisiert ist.
-const int finish_transaction = 30000; //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
+const int authorised_timeout = 10000;  //Zeit in ms bis man nicht mehr Autorisiert ist.
+const int finish_transaction = 30000;  //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
 
 bool cancelrequest = false;
 bool authorised = false;
@@ -47,7 +47,8 @@ FA:07 2Espresso
 
 void setup() {
   Serial.begin(115200);
-  while(!Serial);
+  while (!Serial)
+    ;
 
   Serial.print("Initialisiere RFID Reader");
   SPI.begin();      // init SPI bus
@@ -69,30 +70,30 @@ void setup() {
 }
 
 void loop() {
-/*  getUID();                       //Auskommentieren für Debug von Knöpfen
+  /*  getUID();                       //Auskommentieren für Debug von Knöpfen
   if (requestcoffee > 0) {
     Serial.print("Kaffeenummer: ");
     Serial.println(requestcoffee);
     requestcoffee = 0;
   }*/
-/*if (UID.length() > 0) {
+  /*if (UID.length() > 0) {
   Serial.print("KartenID: ");     //Auskommentieren für Debug von Karten
   Serial.println(UID);
   }*/
   if (authorised) {
-    requestcoffee = 0; //Auskommentieren, wenn keine Explizierte Reihenfolge gefragt ist.
+    requestcoffee = 0;  //Auskommentieren, wenn keine Explizierte Reihenfolge gefragt ist.
     pressCoffee();
   }
 }
 
 void pressCoffee() {  //Name ist ein Insider-Joke, mir ist kein besserer Name für die Funktion eingefallen.
   int wait_till_timeout = 0;
-  while(requestcoffee < 1) {
-    if(wait_till_timeout > authorised_timeout) {
+  while (requestcoffee < 1) {
+    if (wait_till_timeout > authorised_timeout) {
       reset();
       return;
     }
-    if(cancelrequest) {
+    if (cancelrequest) {
       reset();
       return;
     }
@@ -103,42 +104,42 @@ void pressCoffee() {  //Name ist ein Insider-Joke, mir ist kein besserer Name f�
   makeCoffee();
 }
 
-void makeCoffee() {   //Um den Insider Joke fortzusetzen, ein einigermaßen sinnvoller Name um der Maschine zu sagen, mach mal! Ähh Bitte. SOFORT!
-  if(coffeenumber == 1) { //Über den Levelshifter namens Arduino Uno als Umweg den richtigen Befehl an die Maschine senden.
-    Serial.println();
-  } else if(coffeenumber == 2) {
-    Serial.println();
+void makeCoffee() {         //Um den Insider Joke fortzusetzen, ein einigermaßen sinnvoller Name um der Maschine zu sagen, mach mal! Ähh Bitte. SOFORT!
+  if (coffeenumber == 1) {  //Über den Levelshifter namens Arduino Uno als Umweg den richtigen Befehl an die Maschine senden.
+    Serial.println("FA:04");
+  } else if (coffeenumber == 2) {
+    Serial.println("FA:05");
   } else if (coffeenumber == 3) {
-    Serial.println();
+    Serial.println("FA:06");
   } else if (coffeenumber == 4) {
-    Serial.println();
+    Serial.println("FA:07");
   }
   checkout();
 }
 
 void checkout() {
   int pay_up_wait = 0;
-  while(finish_transaction > pay_up_wait) {//30Sek. warten bis Kaufvertrag schließen.
-    if (cancelrequest){
+  while (finish_transaction > pay_up_wait) {  // 30 Sek. warten bis Kaufvertrag schließen.
+    if (cancelrequest) {
       reset();
       return;
     }
     delay(1);
     pay_up_wait++;
   }
-  prefs.begin("Strichliste", false); //Nicht schreibgeschützten Namensraum öffnen
-  int count = prefs.getInt(UID, 0);
-  count ++;//Abrechnen
-  if(double){//Sonderfall doppelter Kaffee/Espresso abarbeiten.
+  prefs.begin("Strichliste", false);         // Nicht schreibgeschützten Namensraum öffnen
+  int count = prefs.getInt(UID.c_str(), 0);  // `String` in `const char*` umwandeln
+  count++;                                   // Abrechnen
+  if (doublecoff) {                      // Sonderfall doppelter Kaffee/Espresso abarbeiten.
     count++;
   }
-  prefs.putInt(UID, count); //Wert schreiben
-  prefs.end(); //Und finales Abspeichern, um eine korrekte Zählung zu ermöglichen.
+  prefs.putInt(UID.c_str(), count);  // Wert schreiben
+  prefs.end();                       // Und finales Abspeichern, um eine korrekte Zählung zu ermöglichen.
 }
 
 void reset() {
-  UID.clear(); //Um falsche Abrechnungen zu vermeiden einfach einmal den String leeren.
-  authorised = false; //Und einmal noch den Zustand zurücksetzen.
+  UID.clear();         //Um falsche Abrechnungen zu vermeiden einfach einmal den String leeren.
+  authorised = false;  //Und einmal noch den Zustand zurücksetzen.
   requestcoffee = 0;
   coffeenumber = 0;
   cancelrequest = false;
@@ -148,10 +149,10 @@ void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     return;
   }  // UID in einer Variablen speichern
-for (int i = 0; i < rfid.uid.size; i++) {
+  for (int i = 0; i < rfid.uid.size; i++) {
     if (rfid.uid.uidByte[i] < 0x10) UID += "0";
     UID += String(rfid.uid.uidByte[i], HEX);
-}
+  }
   UID.trim();  //String verkürzen
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();

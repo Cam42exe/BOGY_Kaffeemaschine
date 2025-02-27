@@ -4,15 +4,30 @@
 #define RST_PIN 27  // ESP32 pin GPIO27
 MFRC522 rfid(SS_PIN, RST_PIN);
 
-String UID = "";
+
+bool doublecoff = false;   //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
+String UID;
 const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
 const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
 const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
+const int authorised_timeout = 10000; //Zeit in ms bis man nicht mehr Autorisiert ist.
+const int finish_transaction = 30000; //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
+
+bool cancelrequest = false;
+bool authorised = false;
 int coffeenumber = 0;   //Welcher Kaffee gemacht werden soll. 1 = Einfach Kaffee; 2 = Doppelter Kaffee;
 int requestcoffee = 0;  //Um Mehrfacheingaben zu verhindern. 3 = Einfacher Espresso; 4 = Doppelter Espresso
+/*
+AN:01 Anschalten
+AN:02 Ausschalten
+FA:04 1Kaffee
+FA:05 2Kaffee
+FA:06 1Espresso
+FA:07 2Espresso
+*/
 
 void setup() {
   Serial.begin(115200);
