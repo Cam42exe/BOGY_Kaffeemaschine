@@ -9,13 +9,7 @@ FA:04 coffe
 FA:05 2coffee
 FA:06 espresso
 FA:07 2espresso
-FA:08 steam
-FA:09 steam
-FA:0C XXL cup 
-?M1  Inkasso mode off
-?M3  Inkasso mode on
-
- */
+*/
 
 #include <SoftwareSerial.h>
 
