@@ -20,6 +20,12 @@ const int ss_pin = 5;    // ESP32 pin GPIO5
 const int rst_pin = 27;  // ESP32 pin GPIO27
 MFRC522 rfid(ss_pin, rst_pin);
 
+#include <WiFi.h>//Tools für den Webserver.
+#include <WebServer.h>
+WebServer server;
+
+const char* ssid = "SSH-Kaffeemaschine";  //Wie soll die Kaffeemaschine heißen?
+const char* password = "Abrechnung";
 
 bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
 String UID = "";
@@ -27,7 +33,7 @@ const int but_c = 26;      //Cancel Knopf
 const int but_scoff = 25;  //Knopf für einen einfachen Kaffee
 const int but_dcoff = 33;  //Knopf für einen doppelten Kaffee
 const int but_sespr = 32;  //Knopf für einen einfachen Espresso
-const int      but_despr = 14;  //Knopf für einen doppelten Espresso
+const int but_despr = 14;  //Knopf für einen doppelten Espresso
 
 const int authorised_timeout = 10000;  //Zeit in ms bis man nicht mehr Autorisiert ist.
 const int finish_transaction = 30000;  //Zeit in ms bis der Kaufvertrag mit der Kaffeemaschine geschlossen wird.
@@ -44,6 +50,8 @@ FA:05 2Kaffee
 FA:06 1Espresso
 FA:07 2Espresso
 */
+
+void wallet();
 
 void setup() {
   Serial.begin(9600);
@@ -67,6 +75,13 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(but_sespr), sespr, FALLING);
   attachInterrupt(digitalPinToInterrupt(but_despr), despr, FALLING);
   Serial.println(" Fertig.");
+  WiFi.softAP(ssid, password);
+  Serial.println("WiFi-AP starten Fertig.");
+  Serial.print("http in die Kaffeemaschine unter: ");
+  Serial.println(WiFi.softAPIP());
+  server.on("/", wallet); //Stand in der Dokumentation
+  server.begin();
+  Serial.println("Webserver starten Fertig.");
 }
 
 void loop() {
@@ -81,6 +96,7 @@ void loop() {
   Serial.print("KartenID: ");     //Auskommentieren für Debug von Karten
   Serial.println(UID);
   }*/
+  server.handleClient();
   if (authorised) {
     requestcoffee = 0;  //Auskommentieren, wenn keine Explizierte Reihenfolge gefragt ist.
     pressCoffee();
@@ -128,12 +144,17 @@ void checkout() {
     delay(1);
     pay_up_wait++;
   }
+  Serial.println("Rechne ab.");
   prefs.begin("Strichliste", false);         // Nicht schreibgeschützten Namensraum öffnen
   int count = prefs.getInt(UID.c_str(), 0);  // `String` in `const char*` umwandeln
-  count++;                                   // Abrechnen
-  if (doublecoff) {                      // Sonderfall doppelter Kaffee/Espresso abarbeiten.
+  Serial.print("Alter Stand: ");
+  Serial.println(count);
+  count++;           // Abrechnen
+  if (doublecoff) {  // Sonderfall doppelter Kaffee/Espresso abarbeiten.
     count++;
   }
+  Serial.print("Neuer Stand:");
+  Serial.println(count);
   prefs.putInt(UID.c_str(), count);  // Wert schreiben
   prefs.end();                       // Und finales Abspeichern, um eine korrekte Zählung zu ermöglichen.
 }
@@ -156,10 +177,60 @@ void getUID() {
     UID += String(rfid.uid.uidByte[i], HEX);
   }
   UID.trim();  //String verkürzen
+  Google(); //Um später alle auszugeben einfach einmal alle Schlüssel abspeichern.
   authorised = true;
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
   Serial.println(UID);
+}
+
+void Google() {  // Name ist ebenfalls ein Witz, weil dies die Funktion ist, welche die UIDs abspeichern soll, um später alle auflisten zu können.
+  bool found = false; //Sollte die UID gefunden werden, kann ich mir die Hälfte sparen.
+  prefs.begin("Strichliste", false); //Müssen irgendwo her lesen.
+  int totalCount = prefs.getInt("UIDs", 0); //Wie viele UIDs haben wir bereits eingesammelt?
+
+  for (int i = 1; i <= totalCount; i++) {//UID bereits bekannt?
+    String key = String(i);
+    String storedUID = prefs.getString(key.c_str(), "");
+    if (storedUID == UID) {
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {//Und wie angekündigt, einmal bitte abspeichern, wenn noch nicht vorhanden.
+    totalCount++;
+    prefs.putString(String(totalCount).c_str(), UID);
+    prefs.putInt("UIDs", totalCount); //Wir haben jetzt eine UID mehr im System. Sollten wir uns merken.
+    Serial.println("Neue UID gespeichert.");
+  } else {
+    Serial.println("UID existiert bereits.");
+  }
+
+  Serial.print("UIDs im System: ");
+  Serial.println(totalCount);
+  prefs.end(); // Und einmal Datenbank schließen.
+}
+
+void wallet() {
+  prefs.begin("Strichliste", true);//Muss ich das oder den Grund wirklich nochmal erklären?
+  String html = "<html><body><h1>Willkommen im Speicher der Kaffeemaschine oder so</h1><p>Dies ist das Abrechnungs-Tool.</p><h2>Liste der UIDs:</h2><ul>";
+  html += listUIDs(); //Nutzer will Liste sehen
+  html += "</ul></body></html>";
+  server.send(200, "text/html", html);//Und so schnell es geht an den Nutzer liefern.
+  prefs.end();
+}
+
+String listUIDs() { //Um nicht die HTML senden Funktion zu überlasten...
+  String html = ""; //Wir lesen hier drin alle ein, nach der Gesammtzahl. Diese werden dann schön zurückgegeben.
+  int totalCount = prefs.getInt("UIDs", 0);
+  for (int i = 1; i <= totalCount; i++) {
+    String key = String(i);
+    String storedUID = prefs.getString(key.c_str(), "");
+    int coffeeCount = prefs.getInt(storedUID.c_str(), 0); // Kaffeestriche auslesen
+    html += "<li>UID: " + storedUID + " - Kaffeestriche: " + String(coffeeCount) + "</li>";
+  }
+  return html;
 }
 
 //ISRs für Userinputs
