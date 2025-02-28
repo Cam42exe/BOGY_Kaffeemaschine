@@ -67,6 +67,7 @@ void loop() {
 
 void getUID() {
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+    
     return;
   }  // UID in einer Variablen speichern
   for (int i = 0; i < rfid.uid.size; i++) {
