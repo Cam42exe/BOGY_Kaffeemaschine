@@ -16,7 +16,7 @@ Wenn Zahltag gekommen ist, kann man einfach nachschauen, wer der Besitzer von we
 
 ### Datenschutz 
 Diese Erweiterung hat absolut keine Internetkommunikation.
-Jegliche Verarbeitung wird Anonym und Lokal durchgeführt. Für die Abrechnung wird ein zusätzliches W-Lan Netzwerk geöffnet, welches einen lokalen Webserver anbietet. Dieser ist durch den Access Point Passwort geschützt. 
+Jegliche Verarbeitung wird Anonym und Lokal durchgeführt. Für die Abrechnung wird ein zusätzliches W-Lan Netzwerk geöffnet, welches einen lokalen Webserver anbietet. Dieser ist durch das WLan Passwort geschützt. 
 
 ![Visuelle Repräsentation im Style einer FSM](images/graph.png)
 
