@@ -25,7 +25,7 @@ MFRC522 rfid(ss_pin, rst_pin);
 WebServer server;
 
 const char* ssid = "SSH-Kaffeemaschine";  //Wie soll die Kaffeemaschine heißen?
-const char* password = "Abrechnung";
+const char* password = "Abrechnung";      //Mir ist bewusst, dass das ein Passwort im Klartext ist, dies soll vom Admin geändert werden und wurde es auch im HLRS.
 
 bool doublecoff = false;  //Variable für die Abrechnung, um zu bestimmen, ob der Nutzer einen doppelten Kaffe wollte.
 String UID = "";
