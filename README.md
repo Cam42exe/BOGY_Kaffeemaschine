@@ -18,7 +18,7 @@ Wenn Zahltag gekommen ist, kann man einfach nachschauen, wer der Besitzer von we
 Diese Erweiterung hat absolut keine Internetkommunikation.
 Jegliche Verarbeitung wird Anonym und Lokal durchgeführt. Für die Abrechnung wird ein zusätzliches W-Lan Netzwerk geöffnet, welches einen lokalen Webserver anbietet. Dieser ist durch das WLan Passwort geschützt. 
 
-![Visuelle Repräsentation im Style einer FSM](images/graph.png)
+![Visuelle Repräsentation im Style einer FSM](media/graph.png)
 
 ## Credits 
 Vielen Dank an [psct](https://github.com/psct) für das [sharespresso](https://github.com/psct/sharespresso) Projekt. Desweiteren ein großes Dankeschön an [vshymanskyy](https://github.com/vshymanskyy/) für die Bibliothek [Preferences](https://github.com/vshymanskyy/Preferences), ohne die das Speichermanagement sehr aufwändig geworden wäre. Desweiteren vielen Dank an [miguelbalboa](https://github.com/miguelbalboa/) für die Bibliothek [MFRC522](https://github.com/miguelbalboa/rfid/).
